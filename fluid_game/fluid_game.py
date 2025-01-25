@@ -8,11 +8,11 @@ WIDTH, HEIGHT = 600, 500
 DT = 0.5
 
 # "Infinite Summation" partial size
-N = 1  # sum images in range i,j in [-N..N]
+N = 0  # sum images in range i,j in [-N..N]
 
 # Anti-periodic in x => crossing x flips sign of gamma
 # Periodic in y => crossing y just wraps around
-MOBIUS_X = True
+MOBIUS_X = False
 
 # Vortex
 VORTEX_RADIUS_CLAMP = 1.0
@@ -23,8 +23,8 @@ VORTEX_STRENGTH_DEFAULT = 1000.0
 
 # Velocity field shading
 GRID_RES = 80
-n=0.5
-a=0.00
+nfac=1.0
+aaa=0.000
 VEL_COLOR_CLAMP = 100.0
 
 # Pygame init
@@ -68,7 +68,7 @@ def partial_infinite_positions(xv, yv, width, height, n, mobius_x):
                 # If the number of times we cross x is odd => gamma flips
                 if abs(i) % 2 == 1:
                     sign_factor *= -1.0
-
+    
             # For y, standard periodic => no sign flip
             yield (x_img, y_img, sign_factor)
 
@@ -81,7 +81,7 @@ def vortex_velocity_at(x, y, xv, yv, gamma):
     r2 = dx*dx + dy*dy
     if r2 < VORTEX_RADIUS_CLAMP*VORTEX_RADIUS_CLAMP:
         r2 = VORTEX_RADIUS_CLAMP*VORTEX_RADIUS_CLAMP
-    fac = gamma / (2.0*math.exp(a*r2**(0.5))*math.pi*500*(r2/500)**n)
+    fac = gamma / (2.0*math.exp(aaa*r2**(0.5))*math.pi*500*(r2/500)**nfac)
     ux = -dy * fac
     uy =  dx * fac
     return (ux, uy)
@@ -90,14 +90,15 @@ def total_velocity_at(x, y, vortices):
     """
     Sum velocity from each vortex's partial infinite images (2D).
     """
-    u_tot = 0.0
-    v_tot = 0.0
+    rc = (x-WIDTH/2.0)**2+(y-HEIGHT/2.0)**2
+    u_tot = 5000.0*(y-HEIGHT/2.0)/(2*math.pi*rc)
+    v_tot = 5000.0*(WIDTH/2.0-x)/(2*math.pi*rc)
     for (xv, yv, g) in vortices:
         for (x_img, y_img, sign_factor) in partial_infinite_positions(xv, yv, WIDTH, HEIGHT, N, MOBIUS_X):
             # final gamma = g * sign_factor
             gamma_img = g * sign_factor
             ux, uy = vortex_velocity_at(x, y, x_img, y_img, gamma_img)
-            u_tot += ux
+            u_tot += ux 
             v_tot += uy
     return (u_tot, v_tot)
 
