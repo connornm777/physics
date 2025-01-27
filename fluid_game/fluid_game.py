@@ -4,7 +4,7 @@ import math
 # -------------------------------------
 # Domain & Basic Simulation Params
 # -------------------------------------
-WIDTH, HEIGHT = 600, 500
+WIDTH, HEIGHT = 400, 400
 DT = 0.5
 
 # "Infinite Summation" partial size

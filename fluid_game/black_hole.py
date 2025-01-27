@@ -39,7 +39,7 @@ def time_dilation_factor(bh_radius, x, y):
     return math.sqrt(fac)
 
 def metric_spatial(bh_radius, x, y):
-    if False:
+    if True:
         r = r_coord(x,y)
         if r <= bh_radius:
             val = 999999.0
